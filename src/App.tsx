@@ -1,49 +1,66 @@
-import React from 'react';
-import { Query, QueryResult } from 'react-apollo';
-import { BrowserRouter as Router, Route, Redirect } from 'react-router-dom';
+import React, { lazy, Suspense } from 'react';
+import { useQuery } from '@apollo/react-hooks';
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  Redirect
+} from 'react-router-dom';
 
 import Index from './pages/Index';
 import About from './pages/About';
-import Features from './pages/Features';
-import Customers from './pages/Customers';
 import Pricing from './pages/Pricing';
 import Login from './pages/Login';
 
-import Nav from './components/Nav';
+import GlobalStyle from './components/GlobalStyle';
 import Loader from './components/Loader';
-import CURRENT_USER from './apollo/queries/currentUser';
+import GET_CURRENT_USER from './apollo/queries/currentUser';
+
+const AppIndex = lazy(() => import('./pages/app/Index'));
 
 /**
  * There are some routes in our app that we only want logged in users to be able to
  * access. For those routes, we wrap them in a GraphQL query that checks if the user
- * is currently logged in. If not, we redirect them to the login page. To learn
- * more about the Apollo `<Query />` component, [see their documentation](https://www.apollographql.com/docs/react/essentials/queries/#the-query-component)
+ * is currently logged in. Furthermore, we check to see if the user has an active
+ * Stripe subscription, and if not, redirect them to the payment flow so that they
+ * can create one. If not, we redirect them to the login page. To learn more about
+ * the Apollo `<Query />` component, [see their documentation](https://www.apollographql.com/docs/react/essentials/queries/#the-query-component)
  */
-const protect = (Page: React.FC): JSX.Element => (
-  <Query query={CURRENT_USER}>
-    {(query: QueryResult) => {
-      const { loading, data } = query;
-      if (loading) {
-        return <Loader />;
-      }
-      return data ? <Page /> : <Redirect to="/login" />;
-    }}
-  </Query>
-);
+const ProtectedRoutes: React.FC = () => {
+  const { data, loading, error } = useQuery<{ mUserInSession: IUser }>(
+    GET_CURRENT_USER
+  );
+  const isLoggedIn = data && data.mUserInSession;
+  if (loading) {
+    return <Loader />;
+  }
+  if (!isLoggedIn || error) {
+    // If a non-logged user is trying to access the app, redirect them to the homepage.
+    return <Redirect to="/" />;
+  }
+  return (
+    <React.Fragment>
+      <Route path="/app" exact component={AppIndex} />
+    </React.Fragment>
+  );
+};
 
 const App: React.FC = () => {
-  const LoggedInNav = protect(Nav);
   return (
     <Router>
-      {LoggedInNav}
-      <main>
-        <Route path="/" exact render={() => protect(Index)} />
-        <Route path="/about" exact render={() => protect(About)} />
-        <Route path="/features" exact render={() => protect(Features)} />
-        <Route path="/customers" exact render={() => protect(Customers)} />
-        <Route path="/pricing" exact render={() => protect(Pricing)} />
-        <Route path="/login" exact component={Login} />
-      </main>
+      <Switch>
+        <Suspense fallback={<Loader />}>
+          {/* Public Routes */}
+          <Route path="/" exact component={Index} />
+          <Route path="/about" exact component={About} />
+          <Route path="/pricing" exact component={Pricing} />
+          <Route path="/login" exact component={Login} />
+
+          {/* Protected Routes */}
+          <ProtectedRoutes />
+        </Suspense>
+      </Switch>
+      <GlobalStyle />
     </Router>
   );
 };

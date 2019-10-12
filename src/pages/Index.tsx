@@ -1,22 +1,25 @@
 import React from 'react';
-import { Query, QueryResult } from 'react-apollo';
+import { Redirect } from 'react-router-dom';
+import { useQuery } from '@apollo/react-hooks';
 
-import CURRENT_USER, { ICurrentUser } from '../apollo/queries/currentUser';
+import GET_CURRENT_USER from '../apollo/queries/currentUser';
 import Loader from '../components/Loader';
+import Layout from '../components/marketing/MarketingLayout';
 
 const IndexPage: React.FC = () => {
+  const { data, loading, error } = useQuery<{ mUserInSession: IUser }>(
+    GET_CURRENT_USER
+  );
+  if (loading) {
+    return <Loader />;
+  }
+  if (error || !data) {
+    return <Redirect to="/" />;
+  }
   return (
-    <Query query={CURRENT_USER}>
-      {(query: QueryResult<ICurrentUser>) => {
-        const { loading, data } = query;
-        if (loading) {
-          return <Loader />;
-        } else if (data) {
-          return <h1>Hello, {data.currentUser.name}!</h1>;
-        }
-        return <h1>Error!</h1>;
-      }}
-    </Query>
+    <Layout>
+      <h1>Hello, {data.mUserInSession.private.name}!</h1>
+    </Layout>
   );
 };
 
