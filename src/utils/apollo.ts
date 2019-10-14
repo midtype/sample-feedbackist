@@ -1,6 +1,6 @@
 import ApolloClient from 'apollo-boost';
 
-import { getJWT } from '../utils/jwt';
+import { getJWT } from './jwt';
 
 const client = new ApolloClient({
   uri: `https://${process.env.REACT_APP_MY_APP_ID}.midtype.dev/graphql`,

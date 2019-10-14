@@ -1,26 +1,22 @@
 import React from 'react';
-import { Redirect } from 'react-router-dom';
-import { useQuery } from '@apollo/react-hooks';
 
-import GET_CURRENT_USER from '../apollo/queries/currentUser';
-import Loader from '../components/Loader';
-import Layout from '../components/marketing/MarketingLayout';
+import Layout, { AppContext } from '../components/Layout';
+import CategoryHeading from '../components/CategoryHeading';
+import Issues, { IssuesView } from '../components/Issues';
 
-const IndexPage: React.FC = () => {
-  const { data, loading, error } = useQuery<{ mUserInSession: IUser }>(
-    GET_CURRENT_USER
-  );
-  if (loading) {
-    return <Loader />;
-  }
-  if (error || !data) {
-    return <Redirect to="/" />;
-  }
+const AppIndex: React.FC = () => {
   return (
     <Layout>
-      <h1>Hello, {data.mUserInSession.private.name}!</h1>
+      <AppContext.Consumer>
+        {context => (
+          <React.Fragment>
+            <CategoryHeading categoryId={context.categoryId} />
+            <Issues categoryId={context.categoryId} view={IssuesView.LIST} />
+          </React.Fragment>
+        )}
+      </AppContext.Consumer>
     </Layout>
   );
 };
 
-export default IndexPage;
+export default AppIndex;

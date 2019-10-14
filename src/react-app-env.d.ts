@@ -9,6 +9,20 @@ interface IUser {
     email: string;
     photoUrl: string;
   };
+  metadatumByUserId?: IUserMetadata;
+}
+
+interface IUserMetadata {
+  id: string;
+  name: string;
+  photoUrl?: string;
+  photo?: IAsset;
+}
+
+interface IAsset {
+  id: string;
+  location: string;
+  filename: stringl;
 }
 
 interface ICategory {
@@ -17,4 +31,36 @@ interface ICategory {
   slug: string;
   hex: string;
   emoji: string;
+}
+
+interface IIssue {
+  id: string;
+  summary: string;
+  description: string;
+  voteCount: number;
+  category: ICategory;
+  requestor: IUser;
+  image: IAsset;
+  issueStatusByIssueId: IIssueStatus;
+  comments: {
+    totalCount: number;
+  };
+  createdAt: string;
+}
+
+interface IIssueStatus {
+  id: string;
+  status: {
+    name: string;
+  };
+}
+
+interface IIssueVote {
+  id: string;
+  user: {
+    id: string;
+  };
+  issue: {
+    id: string;
+  };
 }

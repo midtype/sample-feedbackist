@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 
-import { categoryBackground } from '../../utils';
+import { categoryBackground } from '../utils';
 
 interface ICategoryEmojiProps {
   category: ICategory;

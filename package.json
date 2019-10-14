@@ -20,6 +20,7 @@
     "react-router-dom": "^5.0.1",
     "react-scripts": "3.0.1",
     "styled-components": "^4.4.0",
+    "timeago.js": "^3.0.2",
     "typescript": "3.5.2"
   },
   "scripts": {

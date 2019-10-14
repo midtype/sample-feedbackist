@@ -3,9 +3,9 @@ import styled from 'styled-components';
 import { gql } from 'apollo-boost';
 import { useQuery } from '@apollo/react-hooks';
 
-import Loader from '../Loader';
-import CategoryEmoji from './CategoryEmoji';
-import { categoryBackground } from '../../utils';
+import Loader from './Loader';
+import { AppContext } from './Layout';
+import { categoryBackground } from '../utils';
 
 const GET_CATEGORIES = gql`
   query GetCategories {
@@ -26,17 +26,18 @@ interface ICategoriesQuery {
 }
 
 const Styled = styled.div`
-  .categories {
-    margin-top: 1rem;
-  }
+  display: flex;
+  justify-content: center;
+
   .category {
-    margin-bottom: 0.5rem;
+    margin: 0 1rem;
     display: flex;
     align-items: center;
     border-radius: 1.5rem;
     overflow: hidden;
     position: relative;
     cursor: pointer;
+    padding-right: 1rem;
   }
   .category__emoji {
     height: 3rem;
@@ -50,7 +51,6 @@ const Styled = styled.div`
   }
   .category__name {
     margin: 0;
-    margin-left: 1rem;
   }
   .category__background {
     position: absolute;
@@ -61,19 +61,37 @@ const Styled = styled.div`
     opacity: 0;
     transition: 250ms all;
   }
-  .category:hover .category__background {
+  .category:hover .category__background,
+  .category--active .category__background {
     opacity: 1;
   }
 `;
 
+export const ALL_CATEGORY: ICategory = {
+  id: '',
+  name: 'All',
+  hex: '#000000',
+  emoji: '🌍',
+  slug: ''
+};
+
 const Category: React.FC<ICategory> = props => {
   const background = categoryBackground(props);
   return (
-    <div className="category">
-      <CategoryEmoji category={props} font="1.5rem" diameter="3rem" />
-      <h3 className="category__name">{props.name}</h3>
-      <div className="category__background" style={{ background }} />
-    </div>
+    <AppContext.Consumer>
+      {context => (
+        <div
+          className={`category category--${
+            context.categoryId === props.id ? 'active' : 'inactive'
+          }`}
+          onClick={() => context.setCategoryId(props.id)}
+        >
+          <div className="category__emoji">{props.emoji}</div>
+          <h5 className="category__name">{props.name}</h5>
+          <div className="category__background" style={{ background }} />
+        </div>
+      )}
+    </AppContext.Consumer>
   );
 };
 
@@ -87,13 +105,10 @@ const CategoriesList: React.FC = () => {
   }
   return (
     <Styled>
-      <label>Categories</label>
-      <div className="categories">
-        <Category id="0" hex="#000000" name="ALL" emoji="🌍" slug="" />
-        {data.categories.nodes.map(category => (
-          <Category key={category.id} {...category} />
-        ))}
-      </div>
+      <Category {...ALL_CATEGORY} />
+      {data.categories.nodes.map(category => (
+        <Category key={category.id} {...category} />
+      ))}
     </Styled>
   );
 };

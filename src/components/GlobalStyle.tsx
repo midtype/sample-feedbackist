@@ -5,8 +5,9 @@ export default createGlobalStyle`
 @import url('https://fonts.googleapis.com/css?family=Quattrocento+Sans:400,700&display=swap');
 
 body {
+  background: #fbfbff;
   margin: 0;
-  font-family: 'Quattrocento Sans', Helvetica, sans-serif, Arial, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -24,7 +25,7 @@ p, input, textarea {
 h1,h2,h3,h4,h5 {
   margin: 0;
   padding: 0;
-  font-weight: 600;
+  color: black;
 }
 
 code {
@@ -33,7 +34,7 @@ code {
 }
 
 a, button {
-  font-family: Avenir, Helvetica, sans-serif, Arial, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif, Arial, sans-serif;
   text-decoration: none;
   cursor: pointer;
   border: 0;
@@ -52,9 +53,8 @@ ul, li {
 }
 
 label {
-  font-size: .8rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 2px;
+  font-size: .6rem;
+  font-weight: 400;
+  color: rgba(0,0,0,.6);
 }
 `;
