@@ -22,7 +22,7 @@ interface IUserMetadata {
 interface IAsset {
   id: string;
   location: string;
-  filename: stringl;
+  filename: string;
 }
 
 interface ICategory {
@@ -31,6 +31,10 @@ interface ICategory {
   slug: string;
   hex: string;
   emoji: string;
+  issues?: {
+    totalCount: number;
+    nodes: IIssue[];
+  };
 }
 
 interface IIssue {

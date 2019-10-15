@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import { gql } from 'apollo-boost';
+import gql from 'graphql-tag';
 import { useQuery } from '@apollo/react-hooks';
 
 import Loader from './Loader';

@@ -18,7 +18,7 @@ body * {
 
 p, input, textarea {
   margin: 0;
-  font-size: 1rem;
+  font-size: .8rem;
   line-height: 1.2rem;
 }
 

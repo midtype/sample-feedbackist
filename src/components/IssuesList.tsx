@@ -12,7 +12,7 @@ const Styled = styled.div`
   width: 100%;
   display: grid;
   grid-template-columns: 1fr 2fr;
-  grid-gap: 2rem;
+  grid-gap: 3rem;
 `;
 
 const IssuesList: React.FC<IIssuesListProps> = props => {

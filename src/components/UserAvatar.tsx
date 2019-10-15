@@ -4,6 +4,7 @@ import styled from 'styled-components';
 interface IUserAvatarProps {
   user: IUser;
   diameter: number;
+  className?: string;
 }
 
 const StyledAvatar = styled.div`
@@ -34,7 +35,7 @@ const UserAvatar: React.FC<IUserAvatarProps> = props => {
     fontSize: props.diameter / 2.5
   };
   return (
-    <StyledAvatar style={style}>
+    <StyledAvatar style={style} className={props.className}>
       {!url &&
         metadata.name
           .split(' ')

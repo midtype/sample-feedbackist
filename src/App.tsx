@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { gql } from 'apollo-boost';
+import gql from 'graphql-tag';
 import { useQuery, useApolloClient } from '@apollo/react-hooks';
 import { BrowserRouter, Switch, Route } from 'react-router-dom';
 
@@ -58,7 +58,13 @@ const App: React.FC = () => {
   );
   const client = useApolloClient();
   useEffect(() => {
-    if (!loading && !error && data && !data.mUserInSession.metadatumByUserId) {
+    if (
+      !loading &&
+      !error &&
+      data &&
+      data.mUserInSession &&
+      !data.mUserInSession.metadatumByUserId
+    ) {
       const user = data.mUserInSession;
       // If a user doesn't have their public metadata set already, automatically set it.
       client.mutate({

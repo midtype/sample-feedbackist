@@ -7,3 +7,7 @@ export const setJWT = (jwt: string) => {
 export const getJWT = (): string | null => {
   return window.localStorage.getItem(STORAGE_KEY);
 };
+
+export const clearJWT = (): void => {
+  window.localStorage.removeItem(STORAGE_KEY);
+};

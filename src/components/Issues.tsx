@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import { gql } from 'apollo-boost';
+import gql from 'graphql-tag';
 import { useQuery } from '@apollo/react-hooks';
 
 import Loader from './Loader';
@@ -58,7 +58,7 @@ const ISSUE_FRAGMENT = gql`
 
 const GET_ISSUES_ALL = gql`
   query GetIssues {
-    issues(first: 100, orderBy: VOTE_COUNT_DESC) {
+    issues(first: 100, orderBy: [VOTE_COUNT_DESC, CREATED_AT_DESC]) {
       nodes {
         ...IssueFragment
       }
@@ -71,7 +71,7 @@ const GET_ISSUES_BY_CATEGORY = gql`
   query GetIssues($categoryId: UUID) {
     issues(
       first: 100
-      orderBy: VOTE_COUNT_DESC
+      orderBy: [VOTE_COUNT_DESC, CREATED_AT_DESC]
       filter: { categoryId: { equalTo: $categoryId } }
     ) {
       nodes {

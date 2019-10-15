@@ -1,11 +1,12 @@
 import React, { useCallback } from 'react';
 import styled from 'styled-components';
 import time from 'timeago.js';
-import { gql } from 'apollo-boost';
+import gql from 'graphql-tag';
 import { useQuery, useMutation } from '@apollo/react-hooks';
 
 import Avatar from './UserAvatar';
 import { UserContext } from '../App';
+import { AppContext } from './Layout';
 import { hexToRGB, categoryBackground } from '../utils';
 
 const VOTE_BOX_WIDTH = '4rem';
@@ -82,9 +83,21 @@ const Styled = styled.div`
   display: grid;
   grid-template-columns: ${VOTE_BOX_WIDTH} auto;
   grid-gap: 1rem;
-  max-width: 40rem;
   margin: auto;
   margin-bottom: 2rem;
+  &.has-image {
+    grid-template-columns: ${VOTE_BOX_WIDTH} auto 6rem;
+  }
+  .image {
+    margin: -1rem;
+    margin-left: 0;
+    margin-top: -1.5rem;
+    grid-area: 1 / 3 / 3 / 3;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-color: whitesmoke;
+  }
   .votes {
     width: ${VOTE_BOX_WIDTH};
     height: ${VOTE_BOX_WIDTH};
@@ -116,6 +129,16 @@ const Styled = styled.div`
     border-right: 8px solid transparent;
     border-bottom: 10px solid black;
     margin-bottom: 0.25rem;
+  }
+  .text__summary {
+    margin-bottom: 0.5rem;
+  }
+  .text__description {
+    color: gray;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
   }
   .metadata {
     margin-top: 1rem;
@@ -150,10 +173,11 @@ const Styled = styled.div`
 interface IVoteDisplayProps {
   user: null | IUser;
   issue: IIssue;
+  openLogin: () => void;
 }
 
 const VoteDisplay: React.FC<IVoteDisplayProps> = props => {
-  const { issue, user } = props;
+  const { issue, user, openLogin } = props;
   const { data } = useQuery<IGetUserVotesQuery>(GET_USER_VOTES);
   const vote =
     data && data.mUserInSession
@@ -171,8 +195,10 @@ const VoteDisplay: React.FC<IVoteDisplayProps> = props => {
   const onClick = useCallback(() => {
     if (user) {
       voteMutation();
+    } else {
+      openLogin();
     }
-  }, [user, voteMutation]);
+  }, [user, voteMutation, openLogin]);
   return (
     <div
       className={`votes votes--${vote ? 'voted' : 'unvoted'}`}
@@ -189,11 +215,31 @@ const Issue: React.FC<IIssue> = props => {
   const { r, g, b } = hexToRGB(props.category.hex);
   const background = categoryBackground(props.category);
   return (
-    <Styled>
-      <UserContext.Consumer>
-        {user => <VoteDisplay user={user} issue={props} />}
-      </UserContext.Consumer>
-      <h4 className="summary">{props.summary}</h4>
+    <Styled className={props.image ? 'has-image' : 'no-image'}>
+      <AppContext.Consumer>
+        {context => (
+          <UserContext.Consumer>
+            {user => (
+              <VoteDisplay
+                user={user}
+                issue={props}
+                openLogin={context.toggleLoginModal}
+              />
+            )}
+          </UserContext.Consumer>
+        )}
+      </AppContext.Consumer>
+
+      <div className="text">
+        <h4 className="text__summary">{props.summary}</h4>
+        <p className="text__description">{props.description}</p>
+      </div>
+      {props.image && (
+        <div
+          className="image"
+          style={{ backgroundImage: `url('${props.image.location}')` }}
+        ></div>
+      )}
       <div className="metadata">
         <div className="metadata__user">
           {requestor.metadatumByUserId && (
