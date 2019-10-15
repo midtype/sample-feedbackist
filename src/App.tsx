@@ -1,50 +1,101 @@
-import React from 'react';
-import { Query, QueryResult } from 'react-apollo';
-import { BrowserRouter as Router, Route, Redirect } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import gql from 'graphql-tag';
+import { useQuery, useApolloClient } from '@apollo/react-hooks';
+import { BrowserRouter, Switch, Route } from 'react-router-dom';
 
 import Index from './pages/Index';
-import About from './pages/About';
-import Features from './pages/Features';
-import Customers from './pages/Customers';
-import Pricing from './pages/Pricing';
 import Login from './pages/Login';
 
-import Nav from './components/Nav';
+import GlobalStyle from './components/GlobalStyle';
 import Loader from './components/Loader';
-import CURRENT_USER from './apollo/queries/currentUser';
 
-/**
- * There are some routes in our app that we only want logged in users to be able to
- * access. For those routes, we wrap them in a GraphQL query that checks if the user
- * is currently logged in. If not, we redirect them to the login page. To learn
- * more about the Apollo `<Query />` component, [see their documentation](https://www.apollographql.com/docs/react/essentials/queries/#the-query-component)
- */
-const protect = (Page: React.FC): JSX.Element => (
-  <Query query={CURRENT_USER}>
-    {(query: QueryResult) => {
-      const { loading, data } = query;
-      if (loading) {
-        return <Loader />;
+export const UserContext = React.createContext<IUser | null>(null);
+
+const GET_CURRENT_USER = gql`
+  query GetCurrentUser {
+    mUserInSession {
+      id
+      private {
+        name
+        email
+        photoUrl
       }
-      return data ? <Page /> : <Redirect to="/login" />;
-    }}
-  </Query>
-);
+      metadatumByUserId {
+        id
+        name
+        photo {
+          id
+          filename
+        }
+        photoUrl
+      }
+    }
+  }
+`;
+
+const SET_USER_METADATA = gql`
+  mutation SetUserMetadata($userId: UUID!, $name: String!, $photoUrl: String) {
+    createMetadatum(
+      input: {
+        metadatum: { userId: $userId, name: $name, photoUrl: $photoUrl }
+      }
+    ) {
+      user {
+        id
+        metadatumByUserId {
+          id
+          name
+          photoUrl
+        }
+      }
+    }
+  }
+`;
 
 const App: React.FC = () => {
-  const LoggedInNav = protect(Nav);
+  const { data, loading, error } = useQuery<{ mUserInSession: IUser }>(
+    GET_CURRENT_USER
+  );
+  const client = useApolloClient();
+  useEffect(() => {
+    if (
+      !loading &&
+      !error &&
+      data &&
+      data.mUserInSession &&
+      !data.mUserInSession.metadatumByUserId
+    ) {
+      const user = data.mUserInSession;
+      // If a user doesn't have their public metadata set already, automatically set it.
+      client.mutate({
+        mutation: SET_USER_METADATA,
+        variables: {
+          userId: user.id,
+          name: user.private.name,
+          photoUrl: user.private.photoUrl
+        }
+      });
+    }
+  }, [client, data, error, loading]);
+  if (loading) {
+    return <Loader />;
+  }
+  const user = data && data.mUserInSession ? data.mUserInSession : null;
   return (
-    <Router>
-      {LoggedInNav}
-      <main>
-        <Route path="/" exact render={() => protect(Index)} />
-        <Route path="/about" exact render={() => protect(About)} />
-        <Route path="/features" exact render={() => protect(Features)} />
-        <Route path="/customers" exact render={() => protect(Customers)} />
-        <Route path="/pricing" exact render={() => protect(Pricing)} />
-        <Route path="/login" exact component={Login} />
-      </main>
-    </Router>
+    <UserContext.Provider value={user}>
+      <BrowserRouter>
+        <Switch>
+          <React.Suspense fallback={<Loader />}>
+            {/* Public Routes */}
+            <Route path="/" exact component={Index} />
+            <Route path="/login" exact component={Login} />
+
+            {/* Protected Routes */}
+          </React.Suspense>
+        </Switch>
+        <GlobalStyle />
+      </BrowserRouter>
+    </UserContext.Provider>
   );
 };
 

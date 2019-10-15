@@ -1,23 +1,22 @@
 import React from 'react';
-import { Query, QueryResult } from 'react-apollo';
 
-import CURRENT_USER, { ICurrentUser } from '../apollo/queries/currentUser';
-import Loader from '../components/Loader';
+import Layout, { AppContext } from '../components/Layout';
+import CategoryHeading from '../components/CategoryHeading';
+import Issues, { IssuesView } from '../components/Issues';
 
-const IndexPage: React.FC = () => {
+const AppIndex: React.FC = () => {
   return (
-    <Query query={CURRENT_USER}>
-      {(query: QueryResult<ICurrentUser>) => {
-        const { loading, data } = query;
-        if (loading) {
-          return <Loader />;
-        } else if (data) {
-          return <h1>Hello, {data.currentUser.name}!</h1>;
-        }
-        return <h1>Error!</h1>;
-      }}
-    </Query>
+    <Layout>
+      <AppContext.Consumer>
+        {context => (
+          <React.Fragment>
+            <CategoryHeading categoryId={context.categoryId} />
+            <Issues categoryId={context.categoryId} view={IssuesView.LIST} />
+          </React.Fragment>
+        )}
+      </AppContext.Consumer>
+    </Layout>
   );
 };
 
-export default IndexPage;
+export default AppIndex;

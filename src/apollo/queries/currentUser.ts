@@ -1,21 +1,14 @@
-import { gql } from 'apollo-boost';
+import gql from 'graphql-tag';
 
 export default gql`
   {
-    currentUser {
+    mUserInSession {
       id
-      name
-      email
-      photoUrl
+      private {
+        name
+        email
+        photoUrl
+      }
     }
   }
 `;
-
-export interface ICurrentUser {
-  currentUser: {
-    id: string;
-    name: string;
-    email: string;
-    photoUrl: string;
-  };
-}
