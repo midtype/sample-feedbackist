@@ -8,7 +8,9 @@ const AppIndex: React.FC = () => {
     <Layout>
       <AppContext.Consumer>
         {context => (
-          <Issues categoryId={context.categoryId} view={IssuesView.LIST} />
+          <React.Fragment>
+            <Issues categoryId={context.categoryId} view={IssuesView.LIST} />
+          </React.Fragment>
         )}
       </AppContext.Consumer>
     </Layout>

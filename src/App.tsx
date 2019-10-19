@@ -1,10 +1,11 @@
 import React, { useEffect } from 'react';
 import gql from 'graphql-tag';
 import { useQuery, useApolloClient } from '@apollo/react-hooks';
-import { BrowserRouter, Switch, Route } from 'react-router-dom';
+import { BrowserRouter, Switch, Route, Redirect } from 'react-router-dom';
 
 import Index from './pages/Index';
 import Login from './pages/Login';
+import ViewIssue from './pages/ViewIssue';
 
 import GlobalStyle from './components/GlobalStyle';
 import Loader from './components/Loader';
@@ -83,18 +84,18 @@ const App: React.FC = () => {
   const user = data && data.mUserInSession ? data.mUserInSession : null;
   return (
     <UserContext.Provider value={user}>
-      <BrowserRouter>
-        <Switch>
-          <React.Suspense fallback={<Loader />}>
+      <React.Suspense fallback={<Loader />}>
+        <BrowserRouter>
+          <Switch>
             {/* Public Routes */}
             <Route path="/" exact component={Index} />
             <Route path="/login" exact component={Login} />
-
-            {/* Protected Routes */}
-          </React.Suspense>
-        </Switch>
-        <GlobalStyle />
-      </BrowserRouter>
+            <Route path="/issue/:id" component={ViewIssue} />
+            <Redirect to="/" />
+          </Switch>
+          <GlobalStyle />
+        </BrowserRouter>
+      </React.Suspense>
     </UserContext.Provider>
   );
 };

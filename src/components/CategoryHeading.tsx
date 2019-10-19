@@ -4,7 +4,6 @@ import gql from 'graphql-tag';
 import { useQuery } from '@apollo/react-hooks';
 
 import Loader from './Loader';
-import Toggle from './Toggle';
 import CategoryEmoji from './CategoryEmoji';
 import { ALL_CATEGORY } from './CategoriesList';
 import UserAvatar from './UserAvatar';
@@ -52,6 +51,7 @@ const Styled = styled.div`
   display: flex;
   align-items: baseline;
   justify-content: space-between;
+  margin-bottom: 2rem;
   .title {
     display: flex;
     align-items: baseline;
@@ -130,7 +130,7 @@ const CategoryContributors: React.FC<{
 const CategoryTitle: React.FC<ICategory> = props => {
   return (
     <div className="title">
-      <CategoryEmoji category={props} font="2rem" diameter="5rem" />
+      <CategoryEmoji category={props} font="1.5rem" diameter="3rem" />
       <h1 className="title__text">{props.name}</h1>
       {props.issues && <CategoryContributors {...props.issues} />}
     </div>
@@ -140,10 +140,10 @@ const CategoryTitle: React.FC<ICategory> = props => {
 const CategoryFilters: React.FC = () => {
   return (
     <div className="filters">
-      <div className="filters__group filters__group--view">
+      {/* <div className="filters__group filters__group--view">
         <label>View</label>
         <Toggle checked={true} />
-      </div>
+      </div> */}
     </div>
   );
 };
@@ -160,7 +160,6 @@ const CategoryHeading: React.FC<ICategoryHeadingProps> = props => {
   const category =
     data.categories.nodes.find(category => category.id === categoryId) ||
     ALL_CATEGORY;
-  console.log(category);
   return (
     <Styled>
       <CategoryTitle {...category} />

@@ -7,13 +7,16 @@ interface IProps {
 }
 
 const Styled = styled.div`
-  border: 2px solid rgba(0, 0, 0, 0.4);
-  border-top-color: rgba(0, 0, 0, 0.1);
+  border: 2px solid rgba(0, 0, 0, 0.8);
+  border-top-color: rgba(0, 0, 0, 0.2);
   border-radius: 100%;
-  height: 16px;
-  width: 16px;
+  height: 32px;
+  width: 32px;
   margin: auto;
   animation: rotate 0.8s infinite linear;
+  position: fixed;
+  left: calc(50vw - 16px);
+  top: calc(50vh - 16px);
   @keyframes rotate {
     from {
       transform: rotate(0deg);

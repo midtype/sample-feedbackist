@@ -5,7 +5,6 @@ export default createGlobalStyle`
 @import url('https://fonts.googleapis.com/css?family=Quattrocento+Sans:400,700&display=swap');
 
 body {
-  background: #fbfbff;
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, sans-serif, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;

@@ -1,12 +1,14 @@
 import React from 'react';
-import styled from 'styled-components';
 import gql from 'graphql-tag';
 import { useQuery } from '@apollo/react-hooks';
 
+import CategoryHeading from './CategoryHeading';
 import Loader from './Loader';
 import Board from './IssuesBoard';
 import List from './IssuesList';
+
 import { UserContext } from '../App';
+import { AppContext } from './Layout';
 
 export enum IssuesView {
   BOARD = 'board',
@@ -88,10 +90,6 @@ interface IIssuesQuery {
   };
 }
 
-const Styled = styled.div`
-  margin-top: 4rem;
-`;
-
 const Issues: React.FC<IIssuesProps & { userId: string | null }> = props => {
   const { categoryId, view, userId } = props;
   const { data, loading, error } = useQuery<IIssuesQuery>(
@@ -108,10 +106,13 @@ const Issues: React.FC<IIssuesProps & { userId: string | null }> = props => {
   }
   const issues = data.issues.nodes;
   return (
-    <Styled>
+    <React.Fragment>
+      <AppContext.Consumer>
+        {context => <CategoryHeading categoryId={context.categoryId} />}
+      </AppContext.Consumer>
       {view === IssuesView.BOARD && <Board issues={issues} />}
       {view === IssuesView.LIST && <List issues={issues} />}
-    </Styled>
+    </React.Fragment>
   );
 };
 

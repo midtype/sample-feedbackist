@@ -25,7 +25,7 @@ export const AppContext = React.createContext<IAppContext>({
 const Main = styled.main`
   width: 100vw;
   max-width: 1280px;
-  padding: 3rem;
+  padding: 2rem;
   margin: auto;
 `;
 
