@@ -10,3 +10,4 @@
 [template.environment]
   REACT_APP_MY_APP_ID="feedbackist"
   REACT_APP_MY_APP_ENDPOINT="https://feedbackist-mgif7knuia-uc.a.run.app/graphql"
+  REACT_APP_MY_APP_REDIRECT_URL="http://localhost:3000/login"
