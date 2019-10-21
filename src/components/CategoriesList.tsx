@@ -2,9 +2,9 @@ import React from 'react';
 import styled from 'styled-components';
 import gql from 'graphql-tag';
 import { useQuery } from '@apollo/react-hooks';
+import { useParams, Link } from 'react-router-dom';
 
 import Loader from './Loader';
-import { AppContext } from './Layout';
 import { categoryBackground } from '../utils';
 
 const GET_CATEGORIES = gql`
@@ -75,27 +75,23 @@ export const ALL_CATEGORY: ICategory = {
   slug: ''
 };
 
-const Category: React.FC<ICategory> = props => {
+const Category: React.FC<ICategory & { active: boolean }> = props => {
   const background = categoryBackground(props);
   return (
-    <AppContext.Consumer>
-      {context => (
-        <div
-          className={`category category--${
-            context.categoryId === props.id ? 'active' : 'inactive'
-          }`}
-          onClick={() => context.setCategoryId(props.id)}
-        >
-          <div className="category__emoji">{props.emoji}</div>
-          <h5 className="category__name">{props.name}</h5>
-          <div className="category__background" style={{ background }} />
-        </div>
-      )}
-    </AppContext.Consumer>
+    <Link to={props.slug ? `/categories/${props.slug}` : '/'}>
+      <div
+        className={`category category--${props.active ? 'active' : 'inactive'}`}
+      >
+        <div className="category__emoji">{props.emoji}</div>
+        <h5 className="category__name">{props.name}</h5>
+        <div className="category__background" style={{ background }} />
+      </div>{' '}
+    </Link>
   );
 };
 
 const CategoriesList: React.FC = () => {
+  const { categorySlug } = useParams();
   const { data, loading, error } = useQuery<ICategoriesQuery>(GET_CATEGORIES);
   if (loading) {
     return <Loader />;
@@ -105,9 +101,13 @@ const CategoriesList: React.FC = () => {
   }
   return (
     <Styled>
-      <Category {...ALL_CATEGORY} />
+      <Category {...ALL_CATEGORY} active={!categorySlug} />
       {data.categories.nodes.map(category => (
-        <Category key={category.id} {...category} />
+        <Category
+          key={category.id}
+          {...category}
+          active={categorySlug === category.slug}
+        />
       ))}
     </Styled>
   );

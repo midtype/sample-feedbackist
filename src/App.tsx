@@ -90,6 +90,7 @@ const App: React.FC = () => {
             {/* Public Routes */}
             <Route path="/" exact component={Index} />
             <Route path="/login" exact component={Login} />
+            <Route path="/categories/:categorySlug" exact component={Index} />
             <Route path="/issue/:id" component={ViewIssue} />
             <Redirect to="/" />
           </Switch>

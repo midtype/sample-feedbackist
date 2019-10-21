@@ -192,13 +192,17 @@ const VoteDisplay: React.FC<IVoteDisplayProps> = props => {
       voteId: vote ? vote.id : undefined
     }
   });
-  const onClick = useCallback(() => {
-    if (user) {
-      voteMutation();
-    } else {
-      openLogin();
-    }
-  }, [user, voteMutation, openLogin]);
+  const onClick = useCallback(
+    (e: any) => {
+      e.preventDefault();
+      if (user) {
+        voteMutation();
+      } else {
+        openLogin();
+      }
+    },
+    [user, voteMutation, openLogin]
+  );
   return (
     <div
       className={`votes votes--${vote ? 'voted' : 'unvoted'}`}

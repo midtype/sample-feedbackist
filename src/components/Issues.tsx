@@ -1,23 +1,16 @@
 import React from 'react';
+import styled from 'styled-components';
 import gql from 'graphql-tag';
 import { useQuery } from '@apollo/react-hooks';
+import { Link } from 'react-router-dom';
 
 import CategoryHeading from './CategoryHeading';
 import Loader from './Loader';
-import Board from './IssuesBoard';
-import List from './IssuesList';
-
-import { UserContext } from '../App';
-import { AppContext } from './Layout';
-
-export enum IssuesView {
-  BOARD = 'board',
-  LIST = 'list'
-}
+import Issue from './Issue';
+import IssueCreate from './IssueCreate';
 
 interface IIssuesProps {
-  categoryId?: string;
-  view: IssuesView;
+  categorySlug: string;
 }
 
 const ISSUE_FRAGMENT = gql`
@@ -28,6 +21,7 @@ const ISSUE_FRAGMENT = gql`
     description
     voteCount
     category {
+      id
       name
       hex
     }
@@ -38,6 +32,7 @@ const ISSUE_FRAGMENT = gql`
         name
         photoUrl
         photo {
+          id
           location
         }
       }
@@ -49,6 +44,7 @@ const ISSUE_FRAGMENT = gql`
     issueStatusByIssueId {
       id
       status {
+        id
         name
       }
     }
@@ -59,7 +55,7 @@ const ISSUE_FRAGMENT = gql`
 `;
 
 const GET_ISSUES_ALL = gql`
-  query GetIssues {
+  query GetIssuesAll {
     issues(first: 100, orderBy: [VOTE_COUNT_DESC, CREATED_AT_DESC]) {
       nodes {
         ...IssueFragment
@@ -70,56 +66,84 @@ const GET_ISSUES_ALL = gql`
 `;
 
 const GET_ISSUES_BY_CATEGORY = gql`
-  query GetIssues($categoryId: UUID) {
-    issues(
-      first: 100
-      orderBy: [VOTE_COUNT_DESC, CREATED_AT_DESC]
-      filter: { categoryId: { equalTo: $categoryId } }
-    ) {
-      nodes {
-        ...IssueFragment
+  query GetIssuesByCategory($categorySlug: String!) {
+    categoryBySlug(slug: $categorySlug) {
+      id
+      issues(first: 100, orderBy: [VOTE_COUNT_DESC, CREATED_AT_DESC]) {
+        nodes {
+          ...IssueFragment
+        }
       }
     }
   }
   ${ISSUE_FRAGMENT}
 `;
 
-interface IIssuesQuery {
-  issues: {
-    nodes: IIssue[];
-  };
-}
+const Styled = styled.div`
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  grid-gap: 3rem;
+  .empty {
+    background: white;
+    padding: 2rem;
+    text-align: center;
+    border: 1px solid lightgray;
+  }
+  .empty h3 {
+    margin-bottom: 0.5rem;
+  }
+`;
 
-const Issues: React.FC<IIssuesProps & { userId: string | null }> = props => {
-  const { categoryId, view, userId } = props;
-  const { data, loading, error } = useQuery<IIssuesQuery>(
-    categoryId ? GET_ISSUES_BY_CATEGORY : GET_ISSUES_ALL,
-    {
-      variables: { categoryId, userId }
-    }
-  );
-  if (loading) {
+const EmptyState: React.FC = () => (
+  <div className="empty">
+    <h3>No Issues to Report</h3>
+    <p>
+      Be the first to holler at the {process.env.REACT_APP_MY_APP_NAME || ''}{' '}
+      team about any bugs you notice, or any features you'd like to see!
+    </p>
+  </div>
+);
+
+const Issues: React.FC<IIssuesProps> = props => {
+  const { categorySlug } = props;
+  const issuesAll = useQuery(GET_ISSUES_ALL, {
+    skip: categorySlug ? true : false
+  });
+  const issuesByCat = useQuery(GET_ISSUES_BY_CATEGORY, {
+    variables: { categorySlug },
+    skip: categorySlug ? false : true
+  });
+  if (
+    (issuesAll.loading && !issuesAll.data) ||
+    (issuesByCat.loading && !issuesByCat.data)
+  ) {
     return <Loader />;
   }
-  if (error || !data) {
+  if (issuesAll.error || issuesByCat.error) {
     return null;
   }
-  const issues = data.issues.nodes;
+  const issues = categorySlug
+    ? issuesByCat.data.categoryBySlug.issues.nodes
+    : issuesAll.data.issues.nodes;
   return (
     <React.Fragment>
-      <AppContext.Consumer>
-        {context => <CategoryHeading categoryId={context.categoryId} />}
-      </AppContext.Consumer>
-      {view === IssuesView.BOARD && <Board issues={issues} />}
-      {view === IssuesView.LIST && <List issues={issues} />}
+      <CategoryHeading categorySlug={categorySlug} />
+      <Styled>
+        <div className="issues__create">
+          <IssueCreate categorySlug={categorySlug} />
+        </div>
+        <div className="issues__list">
+          {issues.length === 0 && <EmptyState />}
+          {issues.map((issue: IIssue) => (
+            <Link to={`/issue/${issue.id}`} key={issue.id}>
+              <Issue {...issue} />
+            </Link>
+          ))}
+        </div>
+      </Styled>
     </React.Fragment>
   );
 };
 
-const IssuesWithUser: React.FC<IIssuesProps> = props => (
-  <UserContext.Consumer>
-    {user => <Issues {...props} userId={user ? user.id : null} />}
-  </UserContext.Consumer>
-);
-
-export default IssuesWithUser;
+export default Issues;

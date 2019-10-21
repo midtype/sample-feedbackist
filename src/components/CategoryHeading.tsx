@@ -9,7 +9,7 @@ import { ALL_CATEGORY } from './CategoriesList';
 import UserAvatar from './UserAvatar';
 
 interface ICategoryHeadingProps {
-  categoryId?: string;
+  categorySlug?: string;
 }
 
 const GET_CATEGORIES = gql`
@@ -107,7 +107,9 @@ const CategoryContributors: React.FC<{
   }, [nodes]);
   return (
     <React.Fragment>
-      <div className="title__count">{totalCount} issues.</div>
+      <div className="title__count">
+        {totalCount} {`issue${totalCount > 1 ? 's' : ''}`}.
+      </div>
       <div className="title__contributors">
         {Object.keys(contributors)
           .slice(0, CONTRIBUTORS_LIMIT)
@@ -120,7 +122,8 @@ const CategoryContributors: React.FC<{
             />
           ))}
         <span className="title__contributors__additional">
-          {Object.keys(contributors).length} contributors.
+          {Object.keys(contributors).length}{' '}
+          {`contributor${Object.keys(contributors).length > 1 ? 's' : ''}`}.
         </span>
       </div>
     </React.Fragment>
@@ -132,7 +135,9 @@ const CategoryTitle: React.FC<ICategory> = props => {
     <div className="title">
       <CategoryEmoji category={props} font="1.5rem" diameter="3rem" />
       <h1 className="title__text">{props.name}</h1>
-      {props.issues && <CategoryContributors {...props.issues} />}
+      {props.issues && props.issues.totalCount > 0 && (
+        <CategoryContributors {...props.issues} />
+      )}
     </div>
   );
 };
@@ -149,7 +154,7 @@ const CategoryFilters: React.FC = () => {
 };
 
 const CategoryHeading: React.FC<ICategoryHeadingProps> = props => {
-  const { categoryId } = props;
+  const { categorySlug } = props;
   const { data, loading, error } = useQuery<ICategoryQuery>(GET_CATEGORIES);
   if (loading) {
     return <Loader />;
@@ -158,7 +163,7 @@ const CategoryHeading: React.FC<ICategoryHeadingProps> = props => {
     return null;
   }
   const category =
-    data.categories.nodes.find(category => category.id === categoryId) ||
+    data.categories.nodes.find(category => category.slug === categorySlug) ||
     ALL_CATEGORY;
   return (
     <Styled>

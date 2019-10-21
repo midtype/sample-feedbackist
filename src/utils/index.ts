@@ -1,3 +1,5 @@
+import { getJWT } from './jwt';
+
 export const hexToRGB = (hex: string) => {
   const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
   return result
@@ -12,4 +14,15 @@ export const hexToRGB = (hex: string) => {
 export const categoryBackground = (category: ICategory) => {
   const { r, g, b } = hexToRGB(category.hex);
   return `rgba(${r},${g},${b},.1)`;
+};
+
+export const uploadFile = async (file: Blob) => {
+  const body = new FormData();
+  body.append('asset', file);
+  const asset = await fetch('https://api-staging.midtype.com/upload', {
+    method: 'POST',
+    body,
+    headers: { Authorization: `Bearer ${getJWT()}` }
+  }).then(res => res.json());
+  return asset.asset_id;
 };

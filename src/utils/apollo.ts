@@ -61,7 +61,7 @@ const client = new ApolloClient({
     }),
     requestLink,
     new BatchHttpLink({
-      uri: `https://${process.env.REACT_APP_MY_APP_ID}.midtype.dev/graphql`
+      uri: process.env.REACT_APP_MY_APP_ENDPOINT
     })
   ]),
   cache

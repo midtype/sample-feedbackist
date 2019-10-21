@@ -62,6 +62,8 @@ const Styled = styled.div`
   }
 `;
 
+const SIGN_IN_LINK = `https://accounts.google.com/o/oauth2/v2/auth?response_type=code&client_id=310346463088-u5mebbn91d619r4poms613jvssm1gevn.apps.googleusercontent.com&redirect_uri=https://api-staging.midtype.com/login&access_type=offline&state=name%3D${process.env.REACT_APP_MY_APP_ID}%26redirect%3Dhttp%3A//localhost%3A3000/login&scope=profile%20email`;
+
 const LoginModal: React.FC<IProps> = props =>
   ReactDOM.createPortal(
     <AppContext.Consumer>
@@ -76,7 +78,7 @@ const LoginModal: React.FC<IProps> = props =>
               Login or sign up using a valid Google account.
             </p>
             <div className="modal__button">
-              <a href={process.env.REACT_APP_MY_APP_GOOGLE_SIGN_IN_LINK}>
+              <a href={SIGN_IN_LINK}>
                 <Button>
                   <IconGoogle />
                   Continue With Google

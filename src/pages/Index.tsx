@@ -1,16 +1,14 @@
 import React from 'react';
+import { useParams } from 'react-router-dom';
 
-import Layout, { AppContext } from '../components/Layout';
-import Issues, { IssuesView } from '../components/Issues';
+import Layout from '../components/Layout';
+import Issues from '../components/Issues';
 
 const AppIndex: React.FC = () => {
+  const { categorySlug } = useParams();
   return (
     <Layout>
-      <AppContext.Consumer>
-        {context => (
-          <Issues categoryId={context.categoryId} view={IssuesView.LIST} />
-        )}
-      </AppContext.Consumer>
+      <Issues categorySlug={categorySlug} />
     </Layout>
   );
 };

@@ -52,6 +52,15 @@ interface IIssue {
   createdAt: string;
 }
 
+interface IComment {
+  id: string;
+  text: string;
+  commenter: IUser;
+  createdAt: string;
+  parentComment?: IComment;
+  image?: IAsset;
+}
+
 interface IIssueStatus {
   id: string;
   status: {

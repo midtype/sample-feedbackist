@@ -10,7 +10,20 @@ import IconCheck from './IconCheckCircle';
 
 import { AppContext } from './Layout';
 import { UserContext } from '../App';
-import { getJWT } from '../utils/jwt';
+import { uploadFile } from '../utils';
+
+interface IIssueCreateProps {
+  categorySlug?: string;
+}
+
+const GET_CATEGORY_ID = gql`
+  query GetCategory($categorySlug: String!) {
+    categoryBySlug(slug: $categorySlug) {
+      id
+      slug
+    }
+  }
+`;
 
 const CREATE_ISSUE = gql`
   mutation CreateIssue(
@@ -31,7 +44,12 @@ const CREATE_ISSUE = gql`
         }
       }
     ) {
-      clientMutationId
+      issue {
+        id
+        summary
+        description
+        categoryId
+      }
     }
   }
 `;
@@ -186,17 +204,6 @@ interface IIssueCreateFormProps {
   userId?: string;
 }
 
-const uploadFile = async (file: Blob) => {
-  const body = new FormData();
-  body.append('asset', file);
-  const asset = await fetch('https://api-staging.midtype.com/upload', {
-    method: 'POST',
-    body,
-    headers: { Authorization: `Bearer ${getJWT()}` }
-  }).then(res => res.json());
-  return asset.asset_id;
-};
-
 const ImagePreview: React.FC<{ file?: Blob }> = props => {
   const { file } = props;
   const [src, setSrc] = useState();
@@ -290,7 +297,7 @@ const IssueCreateForm: React.FC<IIssueCreateFormProps> = props => {
       await client.mutate({
         mutation: CREATE_ISSUE,
         variables,
-        refetchQueries: ['GetIssues'],
+        refetchQueries: ['GetIssuesAll', 'GetIssuesByCategory'],
         awaitRefetchQueries: true
       });
       setSubmitted(true);
@@ -381,14 +388,25 @@ const IssueCreateForm: React.FC<IIssueCreateFormProps> = props => {
   );
 };
 
-const IssueCreate: React.FC = () => {
+const IssueCreate: React.FC<IIssueCreateProps> = props => {
+  const { categorySlug } = props;
+  const { data, loading, error } = useQuery(GET_CATEGORY_ID, {
+    variables: { categorySlug },
+    skip: categorySlug ? false : true
+  });
+  if (loading) {
+    return <Loader />;
+  }
+  if (error) {
+    return null;
+  }
   return (
     <AppContext.Consumer>
       {context => (
         <UserContext.Consumer>
           {user => (
             <IssueCreateForm
-              categoryId={context.categoryId}
+              categoryId={data ? data.categoryBySlug.id : undefined}
               userId={user ? user.id : undefined}
               openLogin={context.toggleLoginModal}
             />
