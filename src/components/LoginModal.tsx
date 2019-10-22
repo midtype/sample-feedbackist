@@ -62,7 +62,7 @@ const Styled = styled.div`
   }
 `;
 
-const SIGN_IN_LINK = `https://accounts.google.com/o/oauth2/v2/auth?response_type=code&client_id=310346463088-u5mebbn91d619r4poms613jvssm1gevn.apps.googleusercontent.com&redirect_uri=https://api-staging.midtype.com/login&access_type=offline&state=name%3D${process.env.REACT_APP_MY_APP_ID}%26redirect%3D${process.env.REACT_APP_MY_APP_REDIRECT_URL}&scope=profile%20email`;
+const SIGN_IN_LINK = `https://accounts.google.com/o/oauth2/v2/auth?response_type=code&client_id=310346463088-u5mebbn91d619r4poms613jvssm1gevn.apps.googleusercontent.com&redirect_uri=https://api.midtype.com/login&access_type=offline&state=name%3D${process.env.REACT_APP_MY_APP_ID}%26redirect%3D${process.env.REACT_APP_MY_APP_REDIRECT_URL}&scope=profile%20email`;
 
 const LoginModal: React.FC<IProps> = props =>
   ReactDOM.createPortal(
