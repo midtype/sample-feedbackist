@@ -1,14 +1,13 @@
 import React from 'react';
-import gql from 'graphql-tag';
 import { useParams, Redirect } from 'react-router-dom';
-import { useQuery } from '@apollo/react-hooks';
 
 import Layout from '../components/Layout';
 import CategoryHeading from '../components/CategoryHeading';
 import IssueSingle from '../components/IssueSingle';
 import Loader from '../components/Loader';
+import { useQuery } from '../utils/hooks';
 
-const GET_ISSUE = gql`
+const GET_ISSUE = `
   query GetIssue($issueId: UUID!) {
     issue(id: $issueId) {
       createdAt
@@ -50,10 +49,8 @@ interface IIssueQuery {
 
 const ViewIssue: React.FC = () => {
   const { id: issueId } = useParams();
-  const { data, loading, error } = useQuery<IIssueQuery>(GET_ISSUE, {
-    variables: { issueId }
-  });
-  if (loading && !data) {
+  const { data, error } = useQuery<IIssueQuery>(GET_ISSUE, { issueId });
+  if (!data) {
     return <Loader />;
   }
   if (error || !data) {

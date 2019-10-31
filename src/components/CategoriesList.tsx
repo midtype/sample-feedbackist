@@ -1,13 +1,11 @@
 import React from 'react';
 import styled from 'styled-components';
-import gql from 'graphql-tag';
-import { useQuery } from '@apollo/react-hooks';
 import { useParams, Link } from 'react-router-dom';
 
-import Loader from './Loader';
 import { categoryBackground } from '../utils';
+import { useQuery } from '../utils/hooks';
 
-const GET_CATEGORIES = gql`
+const GET_CATEGORIES = `
   query GetCategories {
     categories {
       nodes {
@@ -92,10 +90,8 @@ const Category: React.FC<ICategory & { active: boolean }> = props => {
 
 const CategoriesList: React.FC = () => {
   const { categorySlug } = useParams();
-  const { data, loading, error } = useQuery<ICategoriesQuery>(GET_CATEGORIES);
-  if (loading) {
-    return <Loader />;
-  }
+  const { data, error } = useQuery<ICategoriesQuery>(GET_CATEGORIES);
+
   if (error || !data) {
     return null;
   }

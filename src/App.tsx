@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import gql from 'graphql-tag';
-import { useQuery, useApolloClient } from '@apollo/react-hooks';
+import { useApolloClient } from '@apollo/react-hooks';
 import { BrowserRouter, Switch, Route, Redirect } from 'react-router-dom';
 
 import Index from './pages/Index';
@@ -9,10 +9,11 @@ import ViewIssue from './pages/ViewIssue';
 
 import GlobalStyle from './components/GlobalStyle';
 import Loader from './components/Loader';
+import { useQuery } from './utils/hooks';
 
 export const UserContext = React.createContext<IUser | null>(null);
 
-const GET_CURRENT_USER = gql`
+const GET_CURRENT_USER = `
   query GetCurrentUser {
     mUserInSession {
       id
@@ -54,13 +55,10 @@ const SET_USER_METADATA = gql`
 `;
 
 const App: React.FC = () => {
-  const { data, loading, error } = useQuery<{ mUserInSession: IUser }>(
-    GET_CURRENT_USER
-  );
+  const { data, error } = useQuery<{ mUserInSession: IUser }>(GET_CURRENT_USER);
   const client = useApolloClient();
   useEffect(() => {
     if (
-      !loading &&
       !error &&
       data &&
       data.mUserInSession &&
@@ -77,10 +75,7 @@ const App: React.FC = () => {
         }
       });
     }
-  }, [client, data, error, loading]);
-  if (loading) {
-    return <Loader />;
-  }
+  }, [client, data, error]);
   const user = data && data.mUserInSession ? data.mUserInSession : null;
   return (
     <UserContext.Provider value={user}>
