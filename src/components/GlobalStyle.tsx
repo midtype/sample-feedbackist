@@ -3,6 +3,9 @@ import * as colors from '../utils/colors';
 
 export default createGlobalStyle`
 @import url("https://use.typekit.net/wvk0xro.css");
+html {
+  font-size: 85%;
+}
 body {
   padding: 0;
   margin: 0;

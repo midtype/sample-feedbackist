@@ -8,6 +8,7 @@ import Avatar from './UserAvatar';
 import { UserContext } from '../App';
 import { AppContext } from './Layout';
 import { hexToRGB, categoryBackground } from '../utils';
+import * as colors from '../utils/colors';
 
 const VOTE_BOX_WIDTH = '4rem';
 
@@ -125,13 +126,13 @@ const Styled = styled.div`
   .votes__arow {
     width: 0;
     height: 0;
-    border-left: 8px solid transparent;
-    border-right: 8px solid transparent;
-    border-bottom: 10px solid black;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-bottom: 8px solid ${colors.BLUE_DARK()};
     margin-bottom: 0.25rem;
   }
   .text__summary {
-    margin-bottom: 0.5rem;
+    margin-bottom: 0rem;
   }
   .text__description {
     color: gray;
@@ -152,10 +153,11 @@ const Styled = styled.div`
     align-items: center;
   }
   .metadata__user p {
+    margin: 0;
     font-size: 0.8rem;
     color: rgba(0, 0, 0, 0.6);
   }
-  .metadata__user__name {
+  p.metadata__user__name {
     margin-left: 1rem;
   }
   .metadata__category__pill {
@@ -209,7 +211,7 @@ const VoteDisplay: React.FC<IVoteDisplayProps> = props => {
       onClick={onClick}
     >
       <div className="votes__arow" />
-      <h3>{issue.voteCount}</h3>
+      <h5>{issue.voteCount}</h5>
     </div>
   );
 };
@@ -235,7 +237,7 @@ const Issue: React.FC<IIssue> = props => {
       </AppContext.Consumer>
 
       <div className="text">
-        <h4 className="text__summary">{props.summary}</h4>
+        <h5 className="text__summary">{props.summary}</h5>
         <p className="text__description">{props.description}</p>
       </div>
       {props.image && (

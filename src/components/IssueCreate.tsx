@@ -82,7 +82,7 @@ const Styled = styled.div`
     display: flex;
     flex-flow: column;
     margin: 1.5rem 0;
-  }
+  y}
   .create__input input,
   .create__input textarea,
   .create__input select {
