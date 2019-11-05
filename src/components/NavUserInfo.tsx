@@ -3,6 +3,7 @@ import styled from 'styled-components';
 
 import Avatar from './UserAvatar';
 import Button from './Button';
+import Loader from './Loader';
 
 import { UserContext } from '../App';
 import { AppContext } from './Layout';
@@ -38,7 +39,7 @@ const Styled = styled.header`
   }
   .user__name,
   .user__email {
-    font-size: 0.8rem;
+    font-size: 1rem;
   }
   .user__email {
     font-weight: 400;
@@ -53,36 +54,41 @@ const NavUserInfo: React.FC = () => {
     window.location.assign('/');
   }, []);
   return (
-    <UserContext.Consumer>
-      {user => {
-        if (!user) {
+    <React.Suspense fallback={<Loader />}>
+      <UserContext.Consumer>
+        {user => {
+          if (user === undefined) {
+            return null;
+          }
+          if (user === null) {
+            return (
+              <AppContext.Consumer>
+                {context => (
+                  <Styled>
+                    <Button onClick={context.toggleLoginModal}>Login</Button>
+                  </Styled>
+                )}
+              </AppContext.Consumer>
+            );
+          }
+          const name = user.metadatumByUserId
+            ? user.metadatumByUserId.name
+            : user.private.name;
           return (
-            <AppContext.Consumer>
-              {context => (
-                <Styled>
-                  <Button onClick={context.toggleLoginModal}>Login</Button>
-                </Styled>
-              )}
-            </AppContext.Consumer>
+            <Styled className={menuOpen ? 'menu-open' : 'menu-closed'}>
+              <div className="menu" onMouseLeave={() => setMenuOpen(false)}>
+                <Button onClick={logout}>Log Out</Button>
+              </div>
+              <div className="user" onMouseEnter={() => setMenuOpen(true)}>
+                <h4 className="user__name">{name}</h4>
+                <h4 className="user__email">{user.private.email}</h4>
+              </div>
+              <Avatar user={user} diameter={40} />
+            </Styled>
           );
-        }
-        const name = user.metadatumByUserId
-          ? user.metadatumByUserId.name
-          : user.private.name;
-        return (
-          <Styled className={menuOpen ? 'menu-open' : 'menu-closed'}>
-            <div className="menu" onMouseLeave={() => setMenuOpen(false)}>
-              <Button onClick={logout}>Log Out</Button>
-            </div>
-            <div className="user" onMouseEnter={() => setMenuOpen(true)}>
-              <h4 className="user__name">{name}</h4>
-              <h4 className="user__email">{user.private.email}</h4>
-            </div>
-            <Avatar user={user} diameter={50} />
-          </Styled>
-        );
-      }}
-    </UserContext.Consumer>
+        }}
+      </UserContext.Consumer>
+    </React.Suspense>
   );
 };
 

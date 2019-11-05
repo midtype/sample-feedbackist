@@ -3,15 +3,17 @@ import gql from 'graphql-tag';
 import { useApolloClient } from '@apollo/react-hooks';
 import { BrowserRouter, Switch, Route, Redirect } from 'react-router-dom';
 
-import Index from './pages/Index';
+import CategoryIssues from './pages/CategoryIssues';
 import Login from './pages/Login';
 import ViewIssue from './pages/ViewIssue';
+import Roadmap from './pages/Roadmap';
 
 import GlobalStyle from './components/GlobalStyle';
-import Loader from './components/Loader';
 import { useQuery } from './utils/hooks';
 
-export const UserContext = React.createContext<IUser | null>(null);
+export const UserContext = React.createContext<IUser | null | undefined>(
+  undefined
+);
 
 const GET_CURRENT_USER = `
   query GetCurrentUser {
@@ -76,22 +78,21 @@ const App: React.FC = () => {
       });
     }
   }, [client, data, error]);
-  const user = data && data.mUserInSession ? data.mUserInSession : null;
+  const user =
+    data && data.mUserInSession ? data.mUserInSession : data ? null : undefined;
   return (
     <UserContext.Provider value={user}>
-      <React.Suspense fallback={<Loader />}>
-        <BrowserRouter>
-          <Switch>
-            {/* Public Routes */}
-            <Route path="/" exact component={Index} />
-            <Route path="/login" exact component={Login} />
-            <Route path="/categories/:categorySlug" exact component={Index} />
-            <Route path="/issue/:id" component={ViewIssue} />
-            <Redirect to="/" />
-          </Switch>
-          <GlobalStyle />
-        </BrowserRouter>
-      </React.Suspense>
+      <BrowserRouter>
+        <Switch>
+          {/* Public Routes */}
+          <Route path="/" exact component={Roadmap} />
+          <Route path="/login" exact component={Login} />
+          <Route path="/categories/:categorySlug" component={CategoryIssues} />
+          <Route path="/issue/:id" component={ViewIssue} />
+          <Redirect to="/" />
+        </Switch>
+        <GlobalStyle />
+      </BrowserRouter>
     </UserContext.Provider>
   );
 };

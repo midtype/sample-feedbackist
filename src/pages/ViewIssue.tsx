@@ -2,7 +2,6 @@ import React from 'react';
 import { useParams, Redirect } from 'react-router-dom';
 
 import Layout from '../components/Layout';
-import CategoryHeading from '../components/CategoryHeading';
 import IssueSingle from '../components/IssueSingle';
 import Loader from '../components/Loader';
 import { useQuery } from '../utils/hooks';
@@ -59,7 +58,6 @@ const ViewIssue: React.FC = () => {
   const issue = data.issue;
   return (
     <Layout>
-      <CategoryHeading categorySlug={issue.category.slug} />
       <IssueSingle issue={issue} />
     </Layout>
   );

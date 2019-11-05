@@ -4,7 +4,6 @@ import gql from 'graphql-tag';
 import { useQuery } from '@apollo/react-hooks';
 
 import Loader from './Loader';
-import CategoryEmoji from './CategoryEmoji';
 import { ALL_CATEGORY } from './CategoriesList';
 import UserAvatar from './UserAvatar';
 
@@ -50,22 +49,15 @@ interface ICategoryQuery {
 const Styled = styled.div`
   display: flex;
   align-items: baseline;
-  justify-content: space-between;
   margin-bottom: 2rem;
-  .title {
-    display: flex;
-    align-items: baseline;
-  }
-  .title__text {
-    margin-left: 1.5rem;
-  }
+
   .title__count,
   .title__contributors {
-    margin-left: 1rem;
     color: rgba(0, 0, 0, 0.6);
-    font-size: 0.8rem;
   }
+
   .title__contributors {
+    margin-left: 1rem;
     display: flex;
     align-items: baseline;
   }
@@ -130,29 +122,6 @@ const CategoryContributors: React.FC<{
   );
 };
 
-const CategoryTitle: React.FC<ICategory> = props => {
-  return (
-    <div className="title">
-      <CategoryEmoji category={props} font="1.5rem" diameter="3rem" />
-      <h1 className="title__text">{props.name}</h1>
-      {props.issues && props.issues.totalCount > 0 && (
-        <CategoryContributors {...props.issues} />
-      )}
-    </div>
-  );
-};
-
-const CategoryFilters: React.FC = () => {
-  return (
-    <div className="filters">
-      {/* <div className="filters__group filters__group--view">
-        <label>View</label>
-        <Toggle checked={true} />
-      </div> */}
-    </div>
-  );
-};
-
 const CategoryHeading: React.FC<ICategoryHeadingProps> = props => {
   const { categorySlug } = props;
   const { data, loading, error } = useQuery<ICategoryQuery>(GET_CATEGORIES);
@@ -167,8 +136,9 @@ const CategoryHeading: React.FC<ICategoryHeadingProps> = props => {
     ALL_CATEGORY;
   return (
     <Styled>
-      <CategoryTitle {...category} />
-      <CategoryFilters />
+      {category.issues && category.issues.totalCount > 0 && (
+        <CategoryContributors {...category.issues} />
+      )}
     </Styled>
   );
 };

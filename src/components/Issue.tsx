@@ -154,11 +154,13 @@ const Styled = styled.div`
   }
   .metadata__user p {
     margin: 0;
+    margin-left: 1rem;
     font-size: 0.8rem;
     color: rgba(0, 0, 0, 0.6);
-  }
-  p.metadata__user__name {
-    margin-left: 1rem;
+    max-width: calc(100% - 80px);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
   .metadata__category__pill {
     padding: 0 0.75rem;
@@ -173,7 +175,7 @@ const Styled = styled.div`
 `;
 
 interface IVoteDisplayProps {
-  user: null | IUser;
+  user?: null | IUser;
   issue: IIssue;
   openLogin: () => void;
 }
@@ -221,7 +223,9 @@ const Issue: React.FC<IIssue> = props => {
   const { r, g, b } = hexToRGB(props.category.hex);
   const background = categoryBackground(props.category);
   return (
-    <Styled className={props.image ? 'has-image' : 'no-image'}>
+    <Styled
+      className={[props.image ? 'has-image' : 'no-image', 'issue'].join(' ')}
+    >
       <AppContext.Consumer>
         {context => (
           <UserContext.Consumer>
@@ -249,19 +253,17 @@ const Issue: React.FC<IIssue> = props => {
       <div className="metadata">
         <div className="metadata__user">
           {requestor.metadatumByUserId && (
-            <React.Fragment>
-              <Avatar user={requestor} diameter={30} />
-              <p className="metadata__user__name">
-                <strong>
-                  {requestor.metadatumByUserId
-                    ? requestor.metadatumByUserId.name
-                    : null}
-                </strong>
-                &nbsp;•&nbsp;
-              </p>
-            </React.Fragment>
+            <Avatar user={requestor} diameter={30} />
           )}
           <p>
+            {requestor.metadatumByUserId && (
+              <strong>
+                {requestor.metadatumByUserId
+                  ? requestor.metadatumByUserId.name
+                  : null}
+                &nbsp;•&nbsp;
+              </strong>
+            )}
             {time().format(new Date(props.createdAt))}&nbsp;•&nbsp;
             {props.comments.totalCount || 'No'} Comments
           </p>

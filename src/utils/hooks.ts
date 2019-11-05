@@ -1,6 +1,6 @@
 import { GraphQLClient } from 'graphql-request';
-import useSWR from '@zeit/swr';
-import { getJWT, clearJWT } from './jwt';
+import useSWR, { ConfigInterface } from '@zeit/swr';
+import { getJWT } from './jwt';
 
 const jwt = getJWT();
 
@@ -11,5 +11,8 @@ const client = new GraphQLClient(
   }
 );
 
-export const useQuery = <T>(q: string, variables?: any) =>
-  useSWR<T>(q, () => client.request(q, variables));
+export const useQuery = <T>(
+  q: string,
+  variables?: any,
+  config?: ConfigInterface
+) => useSWR<T>(q, () => client.request(q, variables), config);

@@ -19,10 +19,15 @@ export const AppContext = React.createContext<IAppContext>({
 });
 
 const Main = styled.main`
-  width: 100vw;
-  max-width: 1280px;
-  padding: 2rem;
+  margin: 2rem 0;
+`;
+
+export const Container = styled.div`
   margin: auto;
+  width: 100%;
+  padding: 0 2rem;
+  height: 100%;
+  max-width: 1280px;
 `;
 
 const LayoutApp: React.FC = props => {
@@ -41,7 +46,9 @@ const LayoutApp: React.FC = props => {
   return (
     <AppContext.Provider value={context}>
       <Nav />
-      <Main>{props.children}</Main>
+      <Main>
+        <Container>{props.children}</Container>
+      </Main>
       <LoginModal />
     </AppContext.Provider>
   );

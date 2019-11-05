@@ -19,10 +19,13 @@ export const categoryBackground = (category: ICategory) => {
 export const uploadFile = async (file: Blob) => {
   const body = new FormData();
   body.append('asset', file);
-  const asset = await fetch('https://api-staging.midtype.com/upload', {
-    method: 'POST',
-    body,
-    headers: { Authorization: `Bearer ${getJWT()}` }
-  }).then(res => res.json());
+  const asset = await fetch(
+    `${process.env.REACT_APP_MIDTYPE_API || 'https://api.midtype.com'}/upload`,
+    {
+      method: 'POST',
+      body,
+      headers: { Authorization: `Bearer ${getJWT()}` }
+    }
+  ).then(res => res.json());
   return asset.asset_id;
 };

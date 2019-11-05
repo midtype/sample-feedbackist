@@ -63,8 +63,15 @@ interface IComment {
 
 interface IIssueStatus {
   id: string;
-  status: {
-    name: string;
+  status: IStatus;
+  issue: IIssue;
+}
+
+interface IStatus {
+  id: string;
+  name: string;
+  issueStatuses: {
+    nodes: IIssueStatus[];
   };
 }
 

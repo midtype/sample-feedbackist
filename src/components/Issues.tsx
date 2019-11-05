@@ -128,9 +128,9 @@ const Issues: React.FC<IIssuesProps> = props => {
     : issuesAll.data.issues.nodes;
   return (
     <React.Fragment>
-      <CategoryHeading categorySlug={categorySlug} />
       <Styled>
         <div className="issues__create">
+          <CategoryHeading categorySlug={categorySlug} />
           <IssueCreate categorySlug={categorySlug} />
         </div>
         <div className="issues__list">
